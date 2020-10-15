@@ -22,6 +22,7 @@ io.on('connection', (socket) => {
 
     console.log('New user connected');
     connnections.push(socket)
+    io.sockets.emit('new_user_connected', {message : 'A new user joined ConsoleChat '});
     
     //later on implement functionalities for speakin only to the spesific hostname
     // if (stringIsAValidUrl(socket.handshake.headers.origin)) {
