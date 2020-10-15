@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-let randomColor = require('randomcolor');
 const uuid = require('uuid');
+const { URL, parse } = require('url');
 
 //Disable x-powered-by header
 app.disable('x-powered-by')
@@ -12,19 +12,29 @@ server = app.listen( process.env.PORT || 5000, function(){
  });
 
 //socket.io instantiation
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {cookie: false});
 
 let users = [];
 let connnections = [];
 
 //listen on every connection
 io.on('connection', (socket) => {
+
     console.log('New user connected');
     connnections.push(socket)
+    
+    //later on implement functionalities for speakin only to the spesific hostname
+    // if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+    //     var socketURL = new URL(socket.handshake.headers.origin);
+    //     socket.join(socketURL);
+    // } else {
+    //     socket.join(socketURL);
+    // }
+    
     if (connnections.length == 0) {
-        socket.emit('welcome_message', {message: 'This site uses Console.Chat - The underground developer chat. There are ' + connnections.length + ' users online. Please invite all your sucker friends here. To start chatting use CC.say("Your-freak-stuff-here") function, and to update your username call CC.username("Your-even-freakier-username")'})
+        socket.emit('welcome_message', {message: 'This site uses Console.Chat - The underground meetingroom for developers. To start chatting use these functions in console:\n\nconsolechat.start()\nconsolechat.username("Your anonymous username")\nconsolechat.say("I love async functions!")'})
     } else {
-        socket.emit('welcome_message', {message: 'Welcome to Console.Chat! There are ' + connnections.length + ' of you freaks online. To start chatting use CC.say("Your-freak-stuff-here") function, and to update your username call CC.username("Your-even-freakier-username")'})
+        socket.emit('welcome_message', {message: 'This site uses Console.Chat - The underground meetingroom for developers. There are ' + connnections.length + ' users online. To start chatting use these functions in console:\n\nconsolechat.start()\nconsolechat.username("Your anonymous username")\nconsolechat.say("I love async functions!")\nconsolechat.close()'})
     }
     
     socket.username = 'Anonymous';
@@ -46,7 +56,10 @@ io.on('connection', (socket) => {
     //listen on new_message
     socket.on('new_message', (data) => {
         //broadcast the new message
-        io.sockets.emit('new_message', {message : data.message, username : socket.username});
+        io.sockets.emit('new_message', {message : data.message, username : socket.username, hostname: data.hostname});
+
+        //later on implement the functionalitites to send messages only to spesific hostname
+        // io.in(socketURL).emit('new_message', {message : data.message, username : socket.username});
     })
 
     //Disconnect
@@ -68,3 +81,17 @@ io.on('connection', (socket) => {
         connnections.splice(connnections.indexOf(socket),1);
     })
 })
+
+const stringIsAValidUrl = (s, protocols) => {
+    try {
+        new URL(s);
+        const parsed = parse(s);
+        return protocols
+            ? parsed.protocol
+                ? protocols.map(x => `${x.toLowerCase()}:`).includes(parsed.protocol)
+                : false
+            : true;
+    } catch (err) {
+        return false;
+    }
+};
