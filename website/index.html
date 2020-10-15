@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<title>ConsoleChat.io</title>
+<meta
+  name="description"
+  content="Underground developer meeting room."
+/>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/styles/default.min.css">
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/terminal.css@0.7.1/dist/terminal.min.css" />
+
+<style>
+    .components-grid {
+      display: grid;
+      grid-column-gap: 1.4em;
+      grid-template-columns: auto;
+      grid-template-rows: auto;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-rows: auto;
+      display: grid;
+      grid-gap: 1em;
+      grid-template-rows: auto;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(calc(var(--page-width) / 12), 1fr)
+      );
+    }
+
+    @media only screen and (min-width: 70em) {
+      .components-grid {
+        grid-template-columns: 3fr 9fr;
+      }
+    }
+  </style>
+
+    <style>
+      :root {
+        --global-font-size: 15px;
+        --global-line-height: 1.4em;
+        --font-stack: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica,
+          Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+        --background-color: #222225;
+        --page-width: 60em;
+        --font-color: #e8e9ed;
+        --invert-font-color: #222225;
+        --secondary-color: #a3abba;
+        --tertiary-color: #a3abba;
+        --primary-color: #62c4ff;
+        --error-color: #ff3c74;
+        --progress-bar-background: #3f3f44;
+        --progress-bar-fill: #62c4ff;
+        --code-bg-color: #3f3f44;
+        --input-style: solid;
+        --display-h1-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+  <div class="terminal-nav">
+    <header class="terminal-logo">
+      <div class="logo terminal-prompt"><a href="https://www.consolechat.io" class="no-style">ConsoleChat.io</a></div>
+    </header>
+    <nav class="terminal-menu">
+      <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+        <li style="height: 28px;"><a class="github-button" href="https://github.com/Gioni06/terminal.css" data-size="large" data-show-count="true" aria-label="Star Gioni06/terminal.css on GitHub">Star</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+<div class="container">
+<h1>ConsoleChat.io - Underground developer meeting room.</h1>
+<p>ConsoleChat turns browsers' console into a global real-time chat that connects developers from websites.</p>
+<br>
+<h2>How it works</h2>
+<p>Use the below functions in browser's console </p>
+
+<p>1. Launch the chat</p>
+<pre><code class="language-html">consolechat.start()</code></pre>
+<p>2. Set your username</p>
+<pre><code class="language-html">consolechat.username('Your cool username')</code></pre>
+<p>3. Say something</p>
+<pre><code class="language-html">consolechat.say('BOOM!')</code></pre>
+
+<p>Go on and try it out on this site!</p>
+<br>
+<h2>Install</h2>
+
+<p>Simply insert ConsoleChat script to your website and you're good to go</p>
+
+<pre><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"https://cdn.consolechat.io/console-chat-min.js"</span>&gt;&lt;/script&gt;</span></code></pre>
+<br>
+<h2>Welcome to the jungle</h2>
+<p>I don't take any responsibility for the content that users publish in ConsoleChat, naughty you.</p>
+<br>
+<h2>Privacy</h2>
+
+<p>This site uses privacy-friendly Simple Analytics for web analtyics. You can read Simple Analytic's privacy policy <a target="_blank" href="https://simpleanalytics.com/privacy">here</a>.</p>
+<p>This site doesn't collect or store any personal information. </p>
+<p>This site doesn't use cookies.</p>
+
+<p>ConsoleChat doesn't track, store, or log any messages or usernames </p>
+<p>ConsoleChat script uses Socket.io for client to server communications. You can read Socket.io's privacy policy <a href="https://socketserve.io/privacy-policy.html" target="_blank">here</a>.</p>
+
+    <br>
+          <footer>
+
+            <p>Powered by <a href="https://www.pointng.io">pointNG - easy and privacy-friendly location toolkit for developers</a></p>
+            <p>With ❤️ by <a href="https://www.github.com/ihmissuti">Kimmo Ihanus.</a></p>
+
+        </footer>
+    </div>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("pre code").forEach(block => {
+      window.hljs.highlightBlock(block);
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js"></script>
+<script src="https://cdn.consolechat.io/console-chat-min.js"></script>
+<script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+<noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
+  </body>
+</html>

@@ -6,6 +6,14 @@ const { URL, parse } = require('url');
 //Disable x-powered-by header
 app.disable('x-powered-by')
 
+//middlewares
+app.use(express.static('public'));
+
+//routes
+app.get('/', (req,res)=>{
+    res.sendFile(__dirname + '/public/index.html');
+});
+
 //Listen on port 5000
 server = app.listen( process.env.PORT || 5000, function(){
     console.log("server listening");
