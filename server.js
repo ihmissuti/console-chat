@@ -7,7 +7,7 @@ const { URL, parse } = require('url');
 app.disable('x-powered-by')
 
 //middlewares
-app.use(express.static('public'));
+app.use(express.static('demo'));
 
 //routes
 app.get('/', (req,res)=>{
