@@ -1,6 +1,6 @@
 // Not more then 100 request in 10 seconds
-let FLOOD_TIME = 10000;
-let FLOOD_MAX = 100;
+let FLOOD_TIME = 1000;
+let FLOOD_MAX = 10;
 
 let flood = {
     floods: {},
