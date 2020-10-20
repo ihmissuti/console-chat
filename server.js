@@ -24,6 +24,7 @@ const io = require("socket.io")(server, {cookie: false});
 
 let users = [];
 let connnections = [];
+let flood = require('../modules/flood')
 
 //listen on every connection
 io.on('connection', (socket) => {
@@ -65,7 +66,10 @@ io.on('connection', (socket) => {
     //listen on new_message
     socket.on('new_message', (data) => {
         //broadcast the new message
-        io.sockets.emit('new_message', {message : data.message, username : socket.username, hostname: data.hostname});
+        if(flood.protect(io, socket)){
+            io.sockets.emit('new_message', {message : data.message, username : socket.username, hostname: data.hostname});
+        }  
+       
 
         //later on implement the functionalitites to send messages only to spesific hostname
         // io.in(socketURL).emit('new_message', {message : data.message, username : socket.username});
