@@ -24,7 +24,7 @@ const io = require("socket.io")(server, {cookie: false});
 
 let users = [];
 let connnections = [];
-let flood = require('../modules/flood')
+let flood = require('./flood')
 
 //listen on every connection
 io.on('connection', (socket) => {
