@@ -1,4 +1,4 @@
-// Not more then 100 request in 10 seconds
+// Not more then 10 request in 1 seconds
 let FLOOD_TIME = 1000;
 let FLOOD_MAX = 10;
 

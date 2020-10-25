@@ -5,7 +5,6 @@
 consolechat = (function(io, window) {
     // let socket = io.connect('https://console-chat-server.herokuapp.com');
     let socket = io.connect('http://localhost:5000');
-
     var started = false
 
     start = () => {
@@ -18,6 +17,18 @@ consolechat = (function(io, window) {
         console.log("ConsoleChat closed")
     }
 
+    onsite = () => {
+        if (started) {
+            socket.emit('onsite')
+        }
+    }
+
+    public = () => {
+        if (started) {
+            socket.emit('public')
+        }
+    }
+
     window.addEventListener('load', function() {
         socket.on("welcome_message", (data) => {
             console.log(`${data.message}`)
@@ -26,7 +37,23 @@ consolechat = (function(io, window) {
 
     socket.on("new_message", (data) => {       
         if (started) {
-            console.log(`${data.username} @${data.hostname}: ${data.message}`)
+            if (!data.error) {
+                console.log(`@${data.hostname} #${data.channel} ${data.username}: ${data.message}`)
+            } else {
+                console.log(`${data.message}`)
+            }
+
+        }   
+    });
+
+    socket.on("message_to_user", (data) => {       
+        if (started) {
+            if (!data.error) {
+                console.log(`${data.message}`)
+            } else {
+                console.log(`${data.message}`)
+            }
+            
         }   
     });
 
@@ -36,6 +63,20 @@ consolechat = (function(io, window) {
         }   
     });
 
+    help = () => {
+        console.log("consolechat.start() = Launch chat\n" +
+        "consolechat.help() = Get instructions\n"+ 
+        "consolechat.username(username) = Set a nickname\n"+ 
+        "consolechat.public() = Chat with users on global channel\n"+
+        "consolechat.onsite() = Chat only to users on the same site that your are currently (current tab)\n"+
+        "consolechat.say(message) = Send a message to chat\n"+
+        "consolechat.msg(username, message) = Send a private message to user\n"+
+        "consolechat.join(channel) = Join a channel. Or create a chanel if the channel does not exist yet.\n"+
+        "consolechat.leave() = Leave your current channel\n"+
+        "consolechat.close() = Close chat"
+        )
+    }
+
     username = (username) => {
         if (!started) {
             console.log("Please start ConsoleChat with function consolechat.start()")
@@ -43,7 +84,6 @@ consolechat = (function(io, window) {
             socket.emit('change_username', {nickName : username})
             console.log('Your username is now ' + username)
         }
-
     }
 
     say = (msg) => {
@@ -51,14 +91,43 @@ consolechat = (function(io, window) {
             console.log("Please start ConsoleChat with function consolechat.start() before sending messages")
         } else {
             socket.emit('new_message', {message : msg, hostname: window.location.hostname})
-        }
-        
+        }       
+    }
+
+    msg = (nickname, msg) => {
+        if (!started) {
+            console.log("Please start ConsoleChat with function consolechat.start()")
+        } else {
+            socket.emit('new_private_message', {message : msg, hostname: window.location.hostname, nickname: nickname})
+        }  
+    }
+    
+    join = (channel) => {
+        if (!started) {
+            console.log("Please start ConsoleChat with function consolechat.start()")
+        } else {
+            socket.emit('join', {channel: channel})
+        }  
+    }
+
+    leave = () => {
+        if (!started) {
+            console.log("Please start ConsoleChat with function consolechat.start()")
+        } else {
+            socket.emit('leave')
+        }  
     }
 
     return {
         say: say,
         username: username,
         start: start,
-        close: close
+        close: close,
+        onsite: onsite,
+        msg: msg,
+        join: join,
+        leave: leave,
+        public: public,
+        help: help
     };
 })(io, window);

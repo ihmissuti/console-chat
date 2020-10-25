@@ -23,38 +23,34 @@ server = app.listen( process.env.PORT || 5000, function(){
 const io = require("socket.io")(server, {cookie: false});
 
 let users = [];
-let connnections = [];
+let connections = [];
 let flood = require('./flood')
 
 //listen on every connection
 io.on('connection', (socket) => {
 
     console.log('New user connected');
-    connnections.push(socket)
-    // io.sockets.emit('new_user_connected', {message : 'A new user joined ConsoleChat '});
-    
-    //later on implement functionalities for speakin only to the spesific hostname
-    // if (stringIsAValidUrl(socket.handshake.headers.origin)) {
-    //     var socketURL = new URL(socket.handshake.headers.origin);
-    //     socket.join(socketURL);
-    // } else {
-    //     socket.join(socketURL);
-    // }
-    
-    if (connnections.length == 0) {
-        socket.emit('welcome_message', {message: 'This site uses Console.Chat - The underground meetingroom for developers. To start chatting use these functions in console:\n\nconsolechat.start()\nconsolechat.username("Your anonymous username")\nconsolechat.say("I love async functions!")'})
+    connections.push(socket)
+    socket.join('public');
+    var connectedUsers =''
+    if (connections.length == 1) {
+       connectedUsers = 'is ' + 1
     } else {
-        socket.emit('welcome_message', {message: 'This site uses Console.Chat - The underground meetingroom for developers. There are ' + connnections.length + ' users online. To start chatting use these functions in console:\n\nconsolechat.start()\nconsolechat.username("Your anonymous username")\nconsolechat.say("I love async functions!")\nconsolechat.close()'})
+        connectedUsers = 'are ' + connections.length
     }
+    socket.emit('welcome_message', {message:'This site uses ConsoleChat.io - The Underground Meeting Room. There ' + connectedUsers + ' users online.\nLaunch ConsoleChat.io: consolechat.start()\nSee all commands: consolechat.help()'})
+        // 'This site uses Console.Chat - The underground meetingroom for developers. There are ' + connections.length + ' users online. To start chatting use these functions in console:\n\nconsolechat.start()\nconsolechat.username("Your anonymous username")\nconsolechat.say("I love async functions!")\nconsolechat.close()'})
     
     socket.username = 'Anonymous';
+    socket.toWebsite = false
+    socket.room = 'public'
 
     //listen on change_username
     socket.on('change_username', data => {
-        let id = uuid.v4(); // create a random id for the user
-        socket.id = id;
+        // let id = uuid.v4(); // create a random id for the user
+        // socket.id = id;
         socket.username = data.nickName;
-        users.push({id, username: socket.username, color: socket.color});
+        users.push({id: socket.id, username: socket.username, color: socket.color});
         updateUsernames();
     })
 
@@ -65,15 +61,166 @@ io.on('connection', (socket) => {
 
     //listen on new_message
     socket.on('new_message', (data) => {
+
         //broadcast the new message
         if(flood.protect(io, socket)){
-            io.sockets.emit('new_message', {message : data.message, username : socket.username, hostname: data.hostname});
+
+            if (socket.toWebsite) {
+
+                if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+                    var socketURL = new URL(socket.handshake.headers.origin).hostname;
+
+                        if (socket.room == 'public') {
+                            console.log('1. Sending message in channel ' + socket.room)
+                            io.to(socket.room).emit('new_message', {message : data.message, username : '<' + socket.username + '>', hostname: data.hostname, error:false, channel: socket.room});
+                        } else {
+                            console.log('2. Sending message in channel ' + socket.room)
+                            io.in(socketURL).to(socket.room).emit('new_message', {message : data.message, username : '<' + socket.username + '>', hostname: data.hostname, error:false, channel: socket.room});
+                        }                     
+                  
+                } else {
+                    console.log("error occured")
+                    io.to(socket.id).emit('message_to_user', {message : 'An error occured.', username : socket.username, hostname: 'undefined', error: true});
+                }
+                
+            } else {
+
+                console.log('3. Sending message in channel ' + socket.room)
+                io.to(socket.room).emit('new_message', {message : data.message, username : '<' + socket.username + '>', hostname: data.hostname, error: null, channel: socket.room});
+              
+            }
         }  
        
-
-        //later on implement the functionalitites to send messages only to spesific hostname
-        // io.in(socketURL).emit('new_message', {message : data.message, username : socket.username});
     })
+
+    socket.on('onsite', () => {
+
+        console.log("User changed to speak only on hostname " + socket.handshake.headers.origin)
+        //Speak only to the current website
+        if(flood.protect(io, socket)){
+            if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+                socket.leave('public');
+                var socketURL = new URL(socket.handshake.headers.origin).hostname;
+                socket.join(socketURL);
+                socket.room = socketURL
+                socket.toWebsite = true
+                io.to(socket.id).emit('message_to_user', {message : 'You are now talking to channel ' + socketURL, username : socket.username, hostname: socket.handshake.headers.origin});
+            } else {
+                io.to(socket.id).emit('message_to_user', {message : 'An error occured.', username : socket.username, hostname: 'undefined', error:true});
+            }
+        }  
+    })
+
+    //send instructions to user
+    socket.on('help', () => {
+
+        if(flood.protect(io, socket)){
+            if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+                io.to(socket.id).emit('message_to_user', {message : 
+                    'consolechat.start() = Launch ConsoleChat.io\n' +
+                    'consolechat.help() = Get instructions\n'
+                    , username : socket.username, hostname: socket.handshake.headers.origin});
+            } else {
+                io.to(socket.id).emit('message_to_user', {message : 'An error occured.', username : socket.username, hostname: 'undefined', error:true});
+            }
+        }  
+    })
+
+    socket.on('public', () => {
+
+        console.log("User changed to speak on public " + socket.handshake.headers.origin)
+        //Speak only to the current website
+        if(flood.protect(io, socket)){
+            if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+                var socketURL = new URL(socket.handshake.headers.origin).hostname;
+                socket.leave(socketURL);
+                socket.leave(socket.room)
+                socket.toWebsite = false
+                socket.join('public')
+                socket.room = 'public'
+                io.to(socket.id).emit('message_to_user', {message : 'Your messages will now be visible on the public channel.', username : socket.username, hostname: socket.handshake.headers.origin});
+            } else {
+                io.to(socket.id).emit('message_to_user', {message : 'An error occured.', username : socket.username, hostname: 'undefined', error:true});
+            }
+        }  
+
+    })
+
+    socket.on('new_private_message', (data) => {
+
+        // console.log("Sending a message to " + data.nickname)
+        //Speak only to the current website
+        if(flood.protect(io, socket)){
+            if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+                var socketToSend = users.filter(function(value){ return value.username==data.nickname;})
+
+                console.log(socketToSend[0])
+                if (socketToSend[0] && socketToSend.username != 'Anonymous') {
+                    console.log("Sending a private message to " + socketToSend[0].id)
+                    io.to(socketToSend[0].id).emit('new_message', {message : data.message, username : '<' + socket.username + '> PRIVATE', hostname: new URL(socket.handshake.headers.origin).hostname});
+                    io.to(socket.id).emit('message_to_user', {message : 'Your messages was sent.'});
+                } else {
+                    io.to(socket.id).emit('message_to_user', {message : 'An error occured.', username : socket.username, hostname: 'undefined',error:true, msg_type: 'PRIVATE_MSG', channel: socket.room});
+                }
+             
+            } else {
+                io.to(socket.id).emit('message_to_user', {message : 'An error occured!.', username : socket.username, hostname: 'undefined', error:true});
+            }
+        }  
+
+    })
+
+    //Join or create a channels
+    socket.on('join', (data) => {
+
+        if(flood.protect(io, socket)){
+            
+            if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+                socket.leave(socket.room);
+                socket.room = data.channel
+                socket.join(data.channel);
+                io.to(socket.id).emit('message_to_user', {message : 'You are now talking in channel: ' + data.channel, username : socket.username, hostname: socket.handshake.headers.origin});    
+                
+            } else {
+                io.to(socket.id).emit('message_to_user', {message : 'An error occured!.', username : socket.username, hostname: 'undefined', error:true});
+            }
+        }  
+    })
+
+        //Leave a channel
+        socket.on('leave', () => {
+
+            if(flood.protect(io, socket)){
+                
+                if (stringIsAValidUrl(socket.handshake.headers.origin)) {
+      
+                    if (socket.toWebsite) {
+
+                        if (socket.room == new URL(socket.handshake.headers.origin).hostname) {
+                            io.to(socket.id).emit('message_to_user', {message : 'No channel to leave. Use consolechat.public() if you wish to speak on public channel.', username : socket.username, hostname: 'undefined', error:true});
+                        } else {
+                            var roomUserLeft = socket.room
+                            socket.leave(socket.room)
+                            var socketURL = new URL(socket.handshake.headers.origin).hostname;
+                            socket.join(socketURL);
+                            socket.room = socketURL
+                            io.to(socket.id).emit('message_to_user', {message : 'You left the channel ' + roomUserLeft + '. You are now speaking to ' + socket.room + ' channel.', username : socket.username, hostname: socket.handshake.headers.origin});
+                        }
+
+                    } else {
+                        var roomUserLeft = socket.room
+                        socket.leave(socket.room)
+                        socket.join('public');
+                        socket.room = 'public'
+                        io.to(socket.id).emit('message_to_user', {message : 'You left the channel ' + roomUserLeft + '. You are now speaking to ' + socket.room + ' channel.', username : socket.username, hostname: socket.handshake.headers.origin});
+                    }
+                   
+                    
+                } else {
+                    io.to(socket.id).emit('message_to_user', {message : 'An error occured!.', username : socket.username, hostname: 'undefined', error:true});
+                }
+            }  
+        })
 
     //Disconnect
     socket.on('disconnect', data => {
@@ -91,7 +238,7 @@ io.on('connection', (socket) => {
         users = users.filter( x => x !== user);
         //Update the users list
         updateUsernames();
-        connnections.splice(connnections.indexOf(socket),1);
+        connections.splice(connections.indexOf(socket),1);
     })
 })
 
