@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
                             io.to(socket.room).emit('new_message', {message : data.message, username : '<' + socket.username + '>', hostname: data.hostname, error:false, channel: socket.room});
                         } else {
                             console.log('2. Sending message in channel ' + socket.room)
-                            io.in(socketURL).to(socket.room).emit('new_message', {message : data.message, username : '<' + socket.username + '>', hostname: data.hostname, error:false, channel: socket.room});
+                            io.to(socket.room).emit('new_message', {message : data.message, username : '<' + socket.username + '>', hostname: data.hostname, error:false, channel: socket.room});
                         }                     
                   
                 } else {
@@ -153,14 +153,14 @@ io.on('connection', (socket) => {
         if(flood.protect(io, socket)){
             if (stringIsAValidUrl(socket.handshake.headers.origin)) {
                 var socketToSend = users.filter(function(value){ return value.username==data.nickname;})
-
+                var socketURL = new URL(socket.handshake.headers.origin).hostname;
                 console.log(socketToSend[0])
-                if (socketToSend[0] && socketToSend.username != 'Anonymous') {
+                if (socketToSend[0] && socketToSend.username != 'Anonymous' && socket.username != 'Anonymous' ) {
                     console.log("Sending a private message to " + socketToSend[0].id)
-                    io.to(socketToSend[0].id).emit('new_message', {message : data.message, username : '<' + socket.username + '> PRIVATE', hostname: new URL(socket.handshake.headers.origin).hostname});
+                    io.to(socketToSend[0].id).emit('new_message', {message : data.message, username : '<' + socket.username + '> PRIVATE', hostname: socketURL, channel: socket.room});
                     io.to(socket.id).emit('message_to_user', {message : 'Your messages was sent.'});
                 } else {
-                    io.to(socket.id).emit('message_to_user', {message : 'An error occured.', username : socket.username, hostname: 'undefined',error:true, msg_type: 'PRIVATE_MSG', channel: socket.room});
+                    io.to(socket.id).emit('message_to_user', {message : 'An error occured. Anonymous users are not able to send private messages.', username : socket.username, hostname: 'undefined',error:true, msg_type: 'PRIVATE_MSG', channel: socket.room});
                 }
              
             } else {
@@ -177,6 +177,9 @@ io.on('connection', (socket) => {
             
             if (stringIsAValidUrl(socket.handshake.headers.origin)) {
                 socket.leave(socket.room);
+                var socketURL = new URL(socket.handshake.headers.origin).hostname;
+                socket.leave(socketURL);
+                socket.leave('public');
                 socket.room = data.channel
                 socket.join(data.channel);
                 io.to(socket.id).emit('message_to_user', {message : 'You are now talking in channel: ' + data.channel, username : socket.username, hostname: socket.handshake.headers.origin});    
