@@ -10,6 +10,7 @@ consolechat = (function(io, window) {
     start = () => {
         started = true
         console.log("ConsoleChat started! ")
+        socket.emit('start')
     }
 
     close = () => {
@@ -28,8 +29,9 @@ consolechat = (function(io, window) {
             socket.emit('public')
         }
     }
+    
 
-    window.addEventListener('load', function() {
+    window.addEventListener('DOMContentLoaded', function() {
         socket.on("welcome_message", (data) => {
             console.log(`${data.message}`)
         });
@@ -63,6 +65,32 @@ consolechat = (function(io, window) {
         }   
     });
 
+    socket.on('show_channel_list', (data) => {       
+        if (started) {
+            if (data.message.length >0) {
+                for(let i= 0;i<data.message.length;i++){
+                    console.log(`${JSON.stringify(data.message[i])}`)
+                }
+            } else {
+                console.log('No channels available.')
+            }
+  
+        }   
+    });
+
+    socket.on('show_user_list', (data) => {       
+        if (started) {
+            if (data.message.length >0) {
+                for(let i= 0;i<data.message.length;i++){
+                    console.log(`${JSON.stringify(data.message[i])}`)
+                }
+            } else {
+                console.log('Cannot get usersNo users available.')
+            }
+  
+        }   
+    });
+
     help = () => {
         console.log("consolechat.start() = Launch chat\n" +
         "consolechat.help() = Get instructions\n"+ 
@@ -73,6 +101,7 @@ consolechat = (function(io, window) {
         "consolechat.msg(username, message) = Send a private message to user\n"+
         "consolechat.join(channel) = Join a channel. Or create a chanel if the channel does not exist yet.\n"+
         "consolechat.leave() = Leave your current channel\n"+
+        "consolechat.list() = Show all available channels on your current channel\n"+
         "consolechat.close() = Close chat"
         )
     }
@@ -82,7 +111,6 @@ consolechat = (function(io, window) {
             console.log("Please start ConsoleChat with function consolechat.start()")
         } else {
             socket.emit('change_username', {nickName : username})
-            console.log('Your username is now ' + username)
         }
     }
 
@@ -102,11 +130,27 @@ consolechat = (function(io, window) {
         }  
     }
     
-    join = (channel) => {
+    join = (channel, type) => {
         if (!started) {
             console.log("Please start ConsoleChat with function consolechat.start()")
         } else {
-            socket.emit('join', {channel: channel})
+            socket.emit('join', {channel: channel, type: type})
+        }  
+    }
+
+    list = () => {
+        if (!started) {
+            console.log("Please start ConsoleChat with function consolechat.start()")
+        } else {
+            socket.emit('list')
+        }  
+    }
+
+    who = () => {
+        if (!started) {
+            console.log("Please start ConsoleChat with function consolechat.start()")
+        } else {
+            socket.emit('who')
         }  
     }
 
@@ -128,6 +172,8 @@ consolechat = (function(io, window) {
         join: join,
         leave: leave,
         public: public,
-        help: help
+        help: help,
+        list: list,
+        who: who
     };
 })(io, window);
