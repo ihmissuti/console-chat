@@ -27,6 +27,7 @@ let connections = [];
 let channels = [];
 var userChannels = [];
 let flood = require('./flood')
+var connectedUsers = []
 
 //listen on every connection
 io.on('connection', (socket) => {
@@ -34,14 +35,14 @@ io.on('connection', (socket) => {
     console.log('New user connected');
     connections.push(socket)
     socket.join('public');
-    var connectedUsers =''
-    if (connections.length == 1) {
-       connectedUsers = 'is ' + 1
+    var connectedUsersStr =''
+    if (connectedUsers.length == 1) {
+        connectedUsersStr = 'is 1 user'
     } else {
-        connectedUsers = 'are ' + connections.length
+        connectedUsersStr = 'are ' + connectedUsers.length + 'users'
     }
     // socket.emit('welcome_message', {message:'boo'})
-    socket.emit('welcome_message', {message:'This site uses ConsoleChat.io - The Underground Meeting Room. There ' + connectedUsers + ' users online.\nLaunch ConsoleChat.io: consolechat.start()\n\nAll availble commands:\nconsolechat.start() = Launch chat\nconsolechat.help() = Get instructions\nconsolechat.username(username) = Set a nickname\nconsolechat.public() = Chat with users on global channel\nconsolechat.onsite() = Chat only to users on the same site that your are currently (current tab)\nconsolechat.say(message) = Send a message to chat\nconsolechat.msg(username, message) = Send a private message to user\nconsolechat.join(channel) = Join a channel. Or create a chanel if the channel does not exist yet.\nconsolechat.join(channel, "private") = Creates a private channel that is not visible for others via consolechat.list()\nconsolechat.list() = Shows a list of all public channels available.\nconsolechat.who() = Shows a list of users who are currently on the channel.\nconsolechat.leave() = Leave your current channel\nconsolechat.close() = Close chat'})
+    socket.emit('welcome_message', {message:'This site uses ConsoleChat.io - The Underground Meeting Room. There ' + connectedUsersStr + '  online.\nLaunch ConsoleChat.io: consolechat.start()\n\nAll availble commands:\nconsolechat.start() = Launch chat\nconsolechat.help() = Get instructions\nconsolechat.username(username) = Set a nickname\nconsolechat.public() = Chat with users on global channel\nconsolechat.onsite() = Chat only to users on the same site that your are currently (current tab)\nconsolechat.say(message) = Send a message to chat\nconsolechat.msg(username, message) = Send a private message to user\nconsolechat.join(channel) = Join a channel. Or create a chanel if the channel does not exist yet.\nconsolechat.join(channel, "private") = Creates a private channel that is not visible for others via consolechat.list()\nconsolechat.list() = Shows a list of all public channels available.\nconsolechat.who() = Shows a list of users who are currently on the channel.\nconsolechat.leave() = Leave your current channel\nconsolechat.close() = Close chat'})
         // 'This site uses Console.Chat - The underground meetingroom for developers. There are ' + connections.length + ' users online. To start chatting use these functions in console:\n\nconsolechat.start()\nconsolechat.username("Your anonymous username")\nconsolechat.say("I love async functions!")\nconsolechat.close()'})
     
     socket.username = 'Anonymous';
@@ -50,6 +51,7 @@ io.on('connection', (socket) => {
  
    
    socket.on('start',  () => {
+        connectedUsers.push({id: socket.id, username: socket.username});
         updateChannelData (socket, socket.room)
    })
 
@@ -362,6 +364,7 @@ io.on('connection', (socket) => {
         //Update the users list
         updateUsernames();
         connections.splice(connections.indexOf(socket),1);
+        connectedUsers.splice(connectedUsers.indexOf(socket),1);
     })
 })
 
