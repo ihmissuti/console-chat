@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
     if (connectedUsers.length == 1) {
         connectedUsersStr = 'is 1 user'
     } else {
-        connectedUsersStr = 'are ' + connectedUsers.length + 'users'
+        connectedUsersStr = 'are ' + connectedUsers.length + ' users'
     }
     // socket.emit('welcome_message', {message:'boo'})
     socket.emit('welcome_message', {message:'This site uses ConsoleChat.io - The Underground Meeting Room. There ' + connectedUsersStr + '  online.\nLaunch ConsoleChat.io: consolechat.start()\n\nAll availble commands:\nconsolechat.start() = Launch chat\nconsolechat.help() = Get instructions\nconsolechat.username(username) = Set a nickname\nconsolechat.public() = Chat with users on global channel\nconsolechat.onsite() = Chat only to users on the same site that your are currently (current tab)\nconsolechat.say(message) = Send a message to chat\nconsolechat.msg(username, message) = Send a private message to user\nconsolechat.join(channel) = Join a channel. Or create a chanel if the channel does not exist yet.\nconsolechat.join(channel, "private") = Creates a private channel that is not visible for others via consolechat.list()\nconsolechat.list() = Shows a list of all public channels available.\nconsolechat.who() = Shows a list of users who are currently on the channel.\nconsolechat.leave() = Leave your current channel\nconsolechat.close() = Close chat'})
