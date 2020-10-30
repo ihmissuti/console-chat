@@ -42,8 +42,8 @@ io.on('connection', (socket) => {
         connectedUsersStr = 'are ' + connectedUsers.length + ' users'
     }
     // socket.emit('welcome_message', {message:'boo'})
-    socket.emit('welcome_message', {message:'This site uses ConsoleChat.io - The Underground Meeting Room. There ' + connectedUsersStr + '  online.\nLaunch ConsoleChat.io: consolechat.start()\n\nAll availble commands:\nconsolechat.start() = Launch chat\nconsolechat.help() = Get instructions\nconsolechat.username(username) = Set a nickname\nconsolechat.public() = Chat with users on global channel\nconsolechat.onsite() = Chat only to users on the same site that your are currently (current tab)\nconsolechat.say(message) = Send a message to chat\nconsolechat.msg(username, message) = Send a private message to user\nconsolechat.join(channel) = Join a channel. Or create a chanel if the channel does not exist yet.\nconsolechat.join(channel, "private") = Creates a private channel that is not visible for others via consolechat.list()\nconsolechat.list() = Shows a list of all public channels available.\nconsolechat.who() = Shows a list of users who are currently on the channel.\nconsolechat.leave() = Leave your current channel\nconsolechat.close() = Close chat'})
-        // 'This site uses Console.Chat - The underground meetingroom for developers. There are ' + connections.length + ' users online. To start chatting use these functions in console:\n\nconsolechat.start()\nconsolechat.username("Your anonymous username")\nconsolechat.say("I love async functions!")\nconsolechat.close()'})
+    socket.emit('welcome_message', {message:'This site uses ConsoleChat.io - The Underground Meeting Room. There ' + connectedUsersStr + '  online.\nLaunch cc.io: cc.start()\n\nAll availble commands:\ncc.start() = Launch chat\ncc.help() = Get instructions\ncc.username("username") = Set a nickname\ncc.public() = Chat with users on global channel\ncc.onsite() = Chat only to users on the same site that your are currently (current tab)\ncc.say("message") = Send a message to chat\ncc.msg("username", "message") = Send a private message to user\ncc.join("channel") = Join a channel. Or create a chanel if the channel does not exist yet.\ncc.join("channel", "private") = Creates a private channel that is not visible for others via cc.list()\ncc.list() = Shows a list of all public channels available.\ncc.who() = Shows a list of users who are currently on the channel.\ncc.leave() = Leave your current channel\ncc.close() = Close chat'})
+        // 'This site uses Console.Chat - The underground meetingroom for developers. There are ' + connections.length + ' users online. To start chatting use these functions in console:\n\ncc.start()\ncc.username("Your anonymous username")\ncc.say("I love async functions!")\ncc.close()'})
     
     socket.username = 'Anonymous';
     socket.toWebsite = false
@@ -135,8 +135,8 @@ io.on('connection', (socket) => {
         if(flood.protect(io, socket)){
             if (stringIsAValidUrl(socket.handshake.headers.origin)) {
                 io.to(socket.id).emit('message_to_user', {message : 
-                    'consolechat.start() = Launch ConsoleChat.io\n' +
-                    'consolechat.help() = Get instructions\n'
+                    'cc.start() = Launch cc.io\n' +
+                    'cc.help() = Get instructions\n'
                     , username : socket.username, hostname: socket.handshake.headers.origin});
             } else {
                 io.to(socket.id).emit('message_to_user', {message : 'An error occured.', username : socket.username, hostname: 'undefined', error:true});
@@ -314,7 +314,7 @@ io.on('connection', (socket) => {
                     if (socket.toWebsite) {
 
                         if (socket.room == new URL(socket.handshake.headers.origin).hostname) {
-                            io.to(socket.id).emit('message_to_user', {message : 'No channel to leave. Use consolechat.public() if you wish to speak on public channel.', username : socket.username, hostname: 'undefined', error:true});
+                            io.to(socket.id).emit('message_to_user', {message : 'No channel to leave. Use cc.public() if you wish to speak on public channel.', username : socket.username, hostname: 'undefined', error:true});
                         } else {
                             // clearChannelArrays(socket)
                            
