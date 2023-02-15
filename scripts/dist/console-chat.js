@@ -3,7 +3,8 @@
 //# sourceMappingURL=socket.io.js.map
 
 cc = (function(io, window) {
-    let socket = io.connect('https://console-chat-server.herokuapp.com');
+    // let socket = io.connect('https://console-chat-server.herokuapp.com');
+    let socket = io.connect('https://console-chat.onrender.com/');
     // let socket = io.connect('http://localhost:5000');
     var started = false
 
