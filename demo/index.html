@@ -1,14 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>ConsoleChat Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #e94560;
+            padding: 2rem;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 700px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+            letter-spacing: -1px;
+        }
+        
+        .subtitle {
+            color: #53d8fb;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .instructions h2 {
+            color: #53d8fb;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .step {
+            margin: 1rem 0;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border-left: 3px solid #e94560;
+        }
+        
+        .step code {
+            color: #53d8fb;
+            font-size: 0.95rem;
+        }
+        
+        .step-number {
+            color: #e94560;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .hint {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            margin-top: 1.5rem;
+        }
+        
+        kbd {
+            background: rgba(233, 69, 96, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        footer {
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+        }
+        
+        a {
+            color: #53d8fb;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>ConsoleChat Demo</h1>
-   <p>Inspect your console</p>
-    <script src="./console-chat.js"></script>
+    <div class="container">
+        <h1>ConsoleChat<span style="color: #53d8fb">.io</span></h1>
+        <p class="subtitle">The Underground Meeting Room for Developers</p>
+        
+        <div class="instructions">
+            <h2>🚀 Quick Start</h2>
+            
+            <div class="step">
+                <span class="step-number">1.</span>
+                Open Developer Console
+                <div class="hint">Press <kbd>F12</kbd> or <kbd>Cmd+Option+J</kbd> (Mac) / <kbd>Ctrl+Shift+J</kbd> (Windows)</div>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2.</span>
+                Start the chat: <code>cc.start()</code>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3.</span>
+                Set your username: <code>cc.username("YourName")</code>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4.</span>
+                Say hello: <code>cc.say("Hello, world!")</code>
+            </div>
+            
+            <p class="hint pulse">Type <code>cc.help()</code> for all available commands</p>
+        </div>
+        
+        <footer>
+            ConsoleChat v2.0.0 • <a href="https://github.com/kimmoihanus/console-chat" target="_blank">GitHub</a>
+        </footer>
+    </div>
 
+    <!-- Socket.IO 4.x Client from CDN -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+    
+    <!-- ConsoleChat Client -->
+    <script src="./console-chat.js"></script>
 </body>
 </html>

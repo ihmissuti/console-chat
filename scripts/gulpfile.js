@@ -1,15 +1,22 @@
-"use strict";
+'use strict';
 
-var gulp = require('gulp');
-var concat = require('gulp-concat');
+const gulp = require('gulp');
+const concat = require('gulp-concat');
 const minify = require('gulp-minify');
-var uglify = require('gulp-uglify');
-var inject = require('gulp-inject-string');
 
-gulp.task('default', function() {
+// Build task - concatenate and minify JavaScript
+function build() {
+    return gulp.src('src/*.js')
+        .pipe(concat('console-chat.js'))
+        .pipe(minify({
+            ext: {
+                min: '-min.js'
+            },
+            noSource: false
+        }))
+        .pipe(gulp.dest('./dist/'));
+}
 
-    gulp.src('src/*.js')
-    .pipe(concat('console-chat.js'))
-    .pipe(minify())
-    .pipe(gulp.dest('./dist/'));
-});
+// Export tasks (Gulp 5.x compatible)
+exports.default = build;
+exports.build = build;

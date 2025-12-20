@@ -1,16 +1,21 @@
 {
   "name": "console-chat-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "ConsoleChat.io - Underground developer meeting room via browser console",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "socket.io": "^2.3.0",
-    "uuid": "^7.0.1"
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.0.3"
   },
-  "author": "",
-  "license": "ISC"
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Kimmo Ihanus",
+  "license": "MIT"
 }

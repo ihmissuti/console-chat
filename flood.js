@@ -1,31 +1,40 @@
-// Not more then 10 request in 1 seconds
-let FLOOD_TIME = 1000;
-let FLOOD_MAX = 10;
+// Flood protection: No more than 10 requests per second
+const FLOOD_TIME = 1000;
+const FLOOD_MAX = 10;
 
-let flood = {
+const flood = {
     floods: {},
     lastFloodClear: new Date(),
+    
+    /**
+     * Protect against flood attacks
+     * @param {Object} io - Socket.IO server instance (kept for API compatibility)
+     * @param {Object} socket - The socket making the request
+     * @returns {boolean} - true if request is allowed, false if blocked
+     */
     protect: (io, socket) => {
-
-        // Reset flood protection
-        if( Math.abs( new Date() - flood.lastFloodClear) > FLOOD_TIME ){
+        // Reset flood protection counters periodically
+        if (Math.abs(new Date() - flood.lastFloodClear) > FLOOD_TIME) {
             flood.floods = {};
             flood.lastFloodClear = new Date();
         }
 
-        flood.floods[socket.id] == undefined ? flood.floods[socket.id] = {} : flood.floods[socket.id];
-        flood.floods[socket.id].count == undefined ? flood.floods[socket.id].count = 0 : flood.floods[socket.id].count;
+        // Initialize flood tracking for this socket
+        if (!flood.floods[socket.id]) {
+            flood.floods[socket.id] = { count: 0 };
+        }
         flood.floods[socket.id].count++;
 
-        //Disconnect the socket if he went over FLOOD_MAX in FLOOD_TIME
-        if( flood.floods[socket.id].count > FLOOD_MAX){
-            console.log('FLOODPROTECTION ', socket.id)
-            io.sockets.connected[socket.id].disconnect();
+        // Disconnect socket if they exceeded FLOOD_MAX requests in FLOOD_TIME
+        if (flood.floods[socket.id].count > FLOOD_MAX) {
+            console.log('FLOOD PROTECTION: Disconnecting', socket.id);
+            // Socket.IO 4.x: Use socket.disconnect() directly
+            socket.disconnect(true);
             return false;
         }
 
         return true;
     }
-}
+};
 
-exports = module.exports = flood;
+module.exports = flood;
